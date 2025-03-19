@@ -1,0 +1,42 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+table{
+  width: 50%;
+  border-collapse: collapse;
+  border: 2px solid black;
+  margin: auto;
+  margin-top: 100px;
+}
+th{
+  font-size: 25px;
+}
+table,tr,th,td{
+  border: 1px solid black;
+}
+.image{
+  width: 100px;
+  height: 100px;
+}
+td{
+  padding: 15px;
+  text-align: center;
+}
+ li{
+   padding-left: 10px;
+   list-style: disc;
+   width:fit-content;
+}
+ul{
+  margin-left: 80px;
+  
+}
+.m{
+  margin-right: 80px;
+}
+.image{
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}

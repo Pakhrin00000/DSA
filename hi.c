@@ -1,103 +1,93 @@
-// Dynamic Stack Implementation using Array in C:
+// C programming for converting infix to  a postfix expression using stack
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
-#define MAXSIZE 10
+#define MAX 100
 
-// Stack structure
+// Stack structure to hold operators
 struct Stack {
+    char arr[MAX];
     int top;
-    int arr[MAXSIZE];
 };
 
 // Function to initialize the stack
-void initStack(struct Stack* stack) {
-    stack->top = -1;
+void initStack(struct Stack *s) {
+    s->top = -1;
 }
 
-// Function to check if the stack is empty
-int isEmpty(struct Stack* stack) {
-    return (stack->top < 0);
+// Function to check if the character is an operator
+int isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '^');
 }
 
-// Function to push an element to the stack
-int push(struct Stack* stack) {
-    int val;
-    if (stack->top == MAXSIZE - 1) {
-        printf("Overflow !!\n");
-        return 0;
-    } else {
-        printf("Enter value to push: ");
-        scanf("%d", &val);
-        stack->top++;
-        stack->arr[stack->top] = val;
-        printf("Item pushed\n");
+// Function to check the precedence of operators
+int precedence(char c) {
+    if (c == '^') {
+        return 3;
+    } else if (c == '*' || c == '/') {
+        return 2;
+    } else if (c == '+' || c == '-') {
         return 1;
+    } else {
+        return -1;  // For non-operators
     }
 }
 
-// Function to pop an element from the stack
-int pop(struct Stack* stack) {
-    if (stack->top == -1) {
-        printf("Underflow !!\n");
-        return 0;
-    } else {
-        stack->top--;
-        printf("Item popped\n");
-        return 1;
-    }
+// Function to check if the character is an operand (numbers or variables)
+int isOperand(char c) {
+    return isalpha(c) || isdigit(c);
 }
 
-// Function to display the stack elements
-void display(struct Stack* stack) {
-    if (stack->top == -1) {
-        printf("Stack is empty\n");
-    } else {
-        printf("Printing stack elements:\n");
-        for (int i = stack->top; i >= 0; i--) {
-            printf("%d\n", stack->arr[i]);
+// Function to convert infix to postfix
+void infixToPostfix(char* infix, char* postfix) {
+    struct Stack s;
+    initStack(&s);
+    int j = 0;
+
+    for (int i = 0; infix[i] != '\0'; i++) {
+        char element = infix[i];
+
+        if (isOperand(element)) {
+            // If the element is an operand, add it to the result (postfix expression)
+            postfix[j++] = element;
+        } else if (element == '(') {
+            // If the element is '(', push it onto the stack
+            s.arr[++s.top] = element;
+        } else if (element == ')') {
+            // If the element is ')', pop from the stack until '(' is found
+            while (s.top != -1 && s.arr[s.top] != '(') {
+                postfix[j++] = s.arr[s.top--];
+            }
+            s.top--;  // Pop '('
+        } else if (isOperator(element)) {
+            // If the element is an operator
+            while (s.top != -1 && precedence(s.arr[s.top]) >= precedence(element)) {
+                postfix[j++] = s.arr[s.top--];
+            }
+            s.arr[++s.top] = element;
         }
     }
+
+    // Pop all remaining operators from the stack
+    while (s.top != -1) {
+        postfix[j++] = s.arr[s.top--];
+    }
+
+    postfix[j] = '\0';  // Null-terminate the postfix expression
 }
 
 int main() {
-    int choice = 0;
-    struct Stack s;
-    initStack(&s);
+    char infix[MAX], postfix[MAX];
     
-    printf("********* Stack operations using array *********\n");
-    printf("\n------------------------------------------------\n");
+    // Input infix expression
+    printf("Enter an infix expression: ");
+    scanf("%s", infix);
 
-    while (choice != 4) {
-        printf("\nChoose one from the below options:\n");
-        printf("1. Push\n2. Pop\n3. Show\n4. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-        
-        switch (choice) {
-            case 1: {
-                push(&s);
-                break;
-            }
-            case 2: {
-                pop(&s);
-                break;
-            }
-            case 3: {
-                display(&s);
-                break;
-            }
-            case 4: {
-                printf("Exiting...\n");
-                exit(0);
-                break;
-            }
-            default: {
-                printf("Please enter a valid choice\n");
-                break;
-            }
-        }
-    }
-    
+    infixToPostfix(infix, postfix);
+
+    // Output the postfix expression
+    printf("Postfix expression: %s\n", postfix);
+
 return 0;
 }
